@@ -3,7 +3,7 @@ using UnityEngine;
 public class Movement_Manager : MonoBehaviour
 {
     public Rigidbody2D rb;
-    public float velocidad, velocidadSalto;
+    public float velocidad, velocidadSalto, velocidadWallJump;
     public bool canJump = true;
     public bool wallJump = false;
     public Transform groundCheck;
@@ -43,15 +43,6 @@ public class Movement_Manager : MonoBehaviour
             anim.SetBool("run", false);
         }
 
-        //Controla el salto
-        canJump = Physics2D.OverlapCircle(groundCheck.position, .2f, ground);
-        if (Input.GetKey(KeyCode.W) && canJump)
-        {
-            canJump = false;
-            rb.AddForce(new Vector2(rb.velocity.x , velocidadSalto));
-
-        }
-
         //Daño por caida
         if (!canJump)
         {
@@ -65,39 +56,62 @@ public class Movement_Manager : MonoBehaviour
                 velocidadCaida = 0;
             }
         }
+        
 
-        //Control salto en pared
+        ////Controla el salto
+        //canJump = Physics2D.OverlapCircle(groundCheck.position, .2f, ground);
+        //if (canJump)
+        //{
+        //    wallAux = 0;
+        //}
+        //if (Input.GetKeyDown(KeyCode.W))
+        //{
+        //    if (canJump)
+        //    {
+        //        wallAux = 0;
+        //        canJump = false;
+        //        rb.AddForce(new Vector2(rb.velocity.x, velocidadSalto));
+        //    }
+        //    else if (wallJump && wallAux > 0)
+        //    {
+        //        wallJump = false;
+        //        wallAux = 0;
+        //        rb.AddForce(new Vector2(rb.velocity.x, velocidadSalto));
+        //    }
+        //}
+
+
+    }
+    private void Update()
+    {
+        canJump = Physics2D.OverlapCircle(groundCheck.position, .2f, ground);
         if (canJump)
         {
-            wallAux = 1;
-        }
-
-        if (Input.GetKeyDown(KeyCode.W) && wallJump && !canJump)
-        {
-            wallJump = false;
             wallAux = 0;
-            rb.AddForce(new Vector2(rb.velocity.x, velocidadSalto));
-            Debug.Log("salte");
         }
-        Debug.Log(wallAux);
-        
-        
-        
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            if (canJump)
+            {
+                wallAux = 0;
+                canJump = false;
+                rb.AddForce(new Vector2(rb.velocity.x, velocidadSalto));
+            }
+            else if (wallJump && wallAux > 0)
+            {
+                wallJump = false;
+                wallAux = 0;
+                rb.AddForce(new Vector2(rb.velocity.x, velocidadWallJump));
+            }
+        }
     }
 
-    private void OnCollisionStay2D(Collision2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.GetComponent<Wall>())
         {
             wallJump = true;
-            Debug.Log("tocando");
-        }
-    }
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.GetComponent<Wall>())
-        {
-            wallJump = false;
+            wallAux = 1;
         }
     }
 

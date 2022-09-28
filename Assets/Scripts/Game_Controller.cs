@@ -11,5 +11,6 @@ public class Game_Controller: MonoBehaviour
         {
             alive = false;
         }
+        Debug.Log(life);
     }
 }

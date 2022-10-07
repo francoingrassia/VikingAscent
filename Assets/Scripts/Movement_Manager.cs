@@ -84,7 +84,7 @@ public class Movement_Manager : MonoBehaviour
     }
     private void Update()
     {
-        canJump = Physics2D.OverlapCircle(groundCheck.position, .2f, ground);
+        canJump = Physics2D.OverlapCircle(groundCheck.position, .3f, ground);
         if (canJump)
         {
             wallAux = 0;

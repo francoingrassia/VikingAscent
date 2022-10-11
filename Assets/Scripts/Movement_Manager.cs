@@ -13,11 +13,13 @@ public class Movement_Manager : MonoBehaviour
     public float velocidadCaida;
     public float velocidadPermitida;
     public int wallAux;
+    private SoundController soundController;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         gameController = FindObjectOfType<Game_Controller>().GetComponent<Game_Controller>();
+        soundController = GetComponent<SoundController>();
     }
 
     private void FixedUpdate()
@@ -89,6 +91,7 @@ public class Movement_Manager : MonoBehaviour
         {
             wallAux = 0;
         }
+
         if (Input.GetKeyDown(KeyCode.W))
         {
             if (canJump)
@@ -96,14 +99,18 @@ public class Movement_Manager : MonoBehaviour
                 wallAux = 0;
                 canJump = false;
                 rb.AddForce(new Vector2(rb.velocity.x, velocidadSalto));
+                soundController.SeleccionAudio(0, 0.6f);
             }
             else if (wallJump && wallAux > 0)
             {
                 wallJump = false;
                 wallAux = 0;
                 rb.AddForce(new Vector2(rb.velocity.x, velocidadWallJump));
+                soundController.SeleccionAudio(0, 0.6f);
             }
         }
+        
+        
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -113,6 +120,12 @@ public class Movement_Manager : MonoBehaviour
             wallJump = true;
             wallAux = 1;
         }
+        if (collision.gameObject.GetComponent<Piso>())
+        {
+            if (canJump)
+            {
+                soundController.SeleccionAudio(Random.Range(1, 7), 0.1f);
+            }
+        }
     }
-
 }

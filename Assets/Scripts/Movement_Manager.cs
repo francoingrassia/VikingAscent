@@ -14,6 +14,7 @@ public class Movement_Manager : MonoBehaviour
     public float velocidadPermitida;
     public int wallAux;
     private SoundController soundController;
+    private bool jumpPressed;
 
     private void Awake()
     {
@@ -24,93 +25,81 @@ public class Movement_Manager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //Controla el movimiento del player
-        rb.velocity = new Vector2(velocidad *Input.GetAxis("Horizontal"), rb.velocity.y);
+        if (gameController.alive)
+        {
+            //Controla el movimiento del player
+            rb.velocity = new Vector2(velocidad * Input.GetAxis("Horizontal"), rb.velocity.y);
 
-        //Controla la animación y dirección al correr 
-        if (Input.GetAxis("Horizontal") > 0)
-        {
-            anim.SetBool("run", true);
-            GetComponent<SpriteRenderer>().flipX = false;
-        }
-        
-        if (Input.GetAxis("Horizontal") < 0)
-        {
-            anim.SetBool("run", true);
-            GetComponent<SpriteRenderer>().flipX = true;
-        }
-
-        if (Input.GetAxis("Horizontal") == 0)
-        {
-            anim.SetBool("run", false);
-        }
-
-        //Daño por caida
-        if (!canJump)
-        {
-            velocidadCaida = rb.velocity.y;
-        }
-        else 
-        {
-            if (velocidadCaida < velocidadPermitida)
+            //Controla la animación y dirección al correr 
+            if (Input.GetAxis("Horizontal") > 0)
             {
-                gameController.life -= 1;
-                velocidadCaida = 0;
+                anim.SetBool("run", true);
+                GetComponent<SpriteRenderer>().flipX = false;
             }
-        }
-        
 
-        ////Controla el salto
-        //canJump = Physics2D.OverlapCircle(groundCheck.position, .2f, ground);
-        //if (canJump)
-        //{
-        //    wallAux = 0;
-        //}
-        //if (Input.GetKeyDown(KeyCode.W))
-        //{
-        //    if (canJump)
-        //    {
-        //        wallAux = 0;
-        //        canJump = false;
-        //        rb.AddForce(new Vector2(rb.velocity.x, velocidadSalto));
-        //    }
-        //    else if (wallJump && wallAux > 0)
-        //    {
-        //        wallJump = false;
-        //        wallAux = 0;
-        //        rb.AddForce(new Vector2(rb.velocity.x, velocidadSalto));
-        //    }
-        //}
+            if (Input.GetAxis("Horizontal") < 0)
+            {
+                anim.SetBool("run", true);
+                GetComponent<SpriteRenderer>().flipX = true;
+            }
+
+            if (Input.GetAxis("Horizontal") == 0)
+            {
+                anim.SetBool("run", false);
+            }
+
+            //Daño por caida
+            if (!canJump)
+            {
+                velocidadCaida = rb.velocity.y;
+            }
+            else
+            {
+                if (velocidadCaida < velocidadPermitida)
+                {
+                    gameController.life -= 1;
+                    velocidadCaida = 0;
+                }
+            }
 
 
-    }
-    private void Update()
-    {
-        canJump = Physics2D.OverlapCircle(groundCheck.position, .3f, ground);
-        if (canJump)
-        {
-            wallAux = 0;
-        }
-
-        if (Input.GetKeyDown(KeyCode.W))
-        {
+            ////Controla el salto
+            canJump = Physics2D.OverlapCircle(groundCheck.position, .3f, ground);
             if (canJump)
             {
                 wallAux = 0;
-                canJump = false;
-                rb.AddForce(new Vector2(rb.velocity.x, velocidadSalto));
-                soundController.SeleccionAudio(0, 0.6f);
             }
-            else if (wallJump && wallAux > 0)
+
+            if (jumpPressed)
             {
-                wallJump = false;
-                wallAux = 0;
-                rb.AddForce(new Vector2(rb.velocity.x, velocidadWallJump));
-                soundController.SeleccionAudio(0, 0.6f);
+                jumpPressed = false;
+                if (canJump)
+                {
+                    wallAux = 0;
+                    canJump = false;
+                    rb.AddForce(new Vector2(rb.velocity.x, velocidadSalto));
+                    soundController.SeleccionAudio(0, 0.6f);
+                }
+                else if (wallJump && wallAux > 0)
+                {
+                    wallJump = false;
+                    wallAux = 0;
+                    rb.AddForce(new Vector2(rb.velocity.x, velocidadWallJump));
+                    soundController.SeleccionAudio(0, 0.6f);
+                }
+            }
+
+        }
+    }
+    private void Update()
+    {
+        if (!gameController.paused)
+        {
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                jumpPressed = true;
             }
         }
-        
-        
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

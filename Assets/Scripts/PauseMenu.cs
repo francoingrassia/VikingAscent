@@ -3,11 +3,13 @@ using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
-    bool option = false;
     [SerializeField] public GameObject OptionMenu;
+    [SerializeField] public GameObject Pause;
+    [SerializeField] public Game_Controller Game;
+
     public void MainMenu()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("Main_Menu");
     }
     public void Salir()
     {
@@ -17,5 +19,10 @@ public class PauseMenu : MonoBehaviour
     public void Option()
     {
         OptionMenu.SetActive(true);
+    }
+    public void Resume()
+    {
+        Game.paused = false;
+
     }
 }

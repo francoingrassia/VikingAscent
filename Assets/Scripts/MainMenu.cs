@@ -3,7 +3,6 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
-    bool option = false;
     [SerializeField] public GameObject OptionMenu;
     public void Jugar()
     {
